@@ -1,0 +1,267 @@
+﻿/****** Object:  Database [Evolent Health]    Script Date: 4/4/2021 11:32:45 PM ******/
+CREATE DATABASE [Evolent Health]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'Evolent Health', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL12.SQLEXPRESS\MSSQL\DATA\Evolent Health.mdf' , SIZE = 3072KB , MAXSIZE = UNLIMITED, FILEGROWTH = 1024KB )
+ LOG ON 
+( NAME = N'Evolent Health_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL12.SQLEXPRESS\MSSQL\DATA\Evolent Health_log.ldf' , SIZE = 1024KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
+GO
+ALTER DATABASE [Evolent Health] SET COMPATIBILITY_LEVEL = 120
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [Evolent Health].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [Evolent Health] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [Evolent Health] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [Evolent Health] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [Evolent Health] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [Evolent Health] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [Evolent Health] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [Evolent Health] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [Evolent Health] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [Evolent Health] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [Evolent Health] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [Evolent Health] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [Evolent Health] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [Evolent Health] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [Evolent Health] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [Evolent Health] SET  DISABLE_BROKER 
+GO
+ALTER DATABASE [Evolent Health] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [Evolent Health] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [Evolent Health] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [Evolent Health] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [Evolent Health] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [Evolent Health] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [Evolent Health] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [Evolent Health] SET RECOVERY SIMPLE 
+GO
+ALTER DATABASE [Evolent Health] SET  MULTI_USER 
+GO
+ALTER DATABASE [Evolent Health] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [Evolent Health] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [Evolent Health] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [Evolent Health] SET TARGET_RECOVERY_TIME = 0 SECONDS 
+GO
+ALTER DATABASE [Evolent Health] SET DELAYED_DURABILITY = DISABLED 
+GO
+USE [Evolent Health]
+GO
+/****** Object:  Table [dbo].[Contact]    Script Date: 4/4/2021 11:32:45 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[Contact](
+	[ContactID] [int] IDENTITY(1,1) NOT NULL,
+	[FirstName] [varchar](50) NULL,
+	[LastName] [varchar](50) NULL,
+	[Email] [varchar](50) NULL,
+	[PhoneNumber] [varchar](20) NULL,
+	[Status] [bit] NULL,
+ CONSTRAINT [PK_Contact] PRIMARY KEY CLUSTERED 
+(
+	[ContactID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+SET IDENTITY_INSERT [dbo].[Contact] ON 
+
+GO
+INSERT [dbo].[Contact] ([ContactID], [FirstName], [LastName], [Email], [PhoneNumber], [Status]) VALUES (3, N'Vijay', N'Kumar Saxena', N'vsaxena@email.com', N'44332211', 1)
+GO
+INSERT [dbo].[Contact] ([ContactID], [FirstName], [LastName], [Email], [PhoneNumber], [Status]) VALUES (1002, N'Rahul', N'Tewari', N'Rahul@email.com', N'2342', 1)
+GO
+INSERT [dbo].[Contact] ([ContactID], [FirstName], [LastName], [Email], [PhoneNumber], [Status]) VALUES (1003, N'Ramesh', N'Kumar', N'ramesh@email.com', N'2342', 0)
+GO
+INSERT [dbo].[Contact] ([ContactID], [FirstName], [LastName], [Email], [PhoneNumber], [Status]) VALUES (1004, N'Amit ', N'Sani', N'amit@', N'2342', 1)
+GO
+INSERT [dbo].[Contact] ([ContactID], [FirstName], [LastName], [Email], [PhoneNumber], [Status]) VALUES (2002, N'Vishal', N'Singh', N'vishal2email.com', N'11223344', 0)
+GO
+SET IDENTITY_INSERT [dbo].[Contact] OFF
+GO
+/****** Object:  StoredProcedure [dbo].[DeleteContact]    Script Date: 4/4/2021 11:32:46 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[DeleteContact]
+    @contatcId int,
+ 	@status bit
+AS
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+    SET NOCOUNT ON;
+	declare @rowID int
+	BEGIN TRANSACTION	
+    Update [dbo].[Contact] 
+    set Status=@status
+    where ContactID = @contatcId
+
+
+	IF(@@ERROR <> 0)
+		  BEGIN
+			rollback tran;
+			Set @rowID=0
+		  END
+		  ELSE
+		  BEGIN
+			commit tran;
+			Set @rowID=@contatcId;
+     End
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GetContacts]    Script Date: 4/4/2021 11:32:46 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetContacts]
+   
+AS
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+    SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+select [ContactID]
+      ,[FirstName]
+      ,[LastName]
+      ,[Email]
+      ,[PhoneNumber]
+      ,[Status]
+from Contact
+where [Status]=1
+
+End
+GO
+/****** Object:  StoredProcedure [dbo].[GetContatcId]    Script Date: 4/4/2021 11:32:46 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetContatcId]
+@contatcId int
+AS
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+    SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+select [ContactID]
+      ,[FirstName]
+      ,[LastName]
+      ,[Email]
+      ,[PhoneNumber]
+      ,[Status]
+from Contact where ContactID=@contatcId 
+
+End
+GO
+/****** Object:  StoredProcedure [dbo].[InsertContact]    Script Date: 4/4/2021 11:32:46 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[InsertContact]
+    @firstname varchar(50),
+    @LastName varchar(50),
+	@email varchar(50),
+	@phoneNumber varchar(20)
+AS
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+    SET NOCOUNT ON;
+Declare @rowID int
+BEGIN TRANSACTION	
+ insert into Contact(FirstName,LastName,Email,PhoneNumber,Status)
+	  values (@firstname,@LastName,@email,@phoneNumber,1) 
+   
+     IF(@@ERROR <> 0)
+		  BEGIN
+			rollback tran;
+			Set @rowID=0
+		  END
+		  ELSE
+		  BEGIN
+			commit tran;
+			Set @rowID=@@Identity;
+     End
+END
+
+GO
+/****** Object:  StoredProcedure [dbo].[UpdateContact]    Script Date: 4/4/2021 11:32:46 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[UpdateContact]
+    @ContatcID int,
+    @Firstname varchar(50),
+    @LastName varchar(50),
+	@Email varchar(50),
+	@PhoneNumber varchar(20)
+AS
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+    SET NOCOUNT ON;
+	Declare @rowID int
+	BEGIN TRANSACTION	
+    Update [dbo].[Contact] 
+    set FirstName = @Firstname, LastName =@LastName, Email=@Email,PhoneNumber=@PhoneNumber
+    where ContactID = @ContatcID
+
+	 IF(@@ERROR <> 0)
+		  BEGIN
+			rollback tran;
+			Set @rowID=0
+		  END
+		  ELSE
+		  BEGIN
+			commit tran;
+			Set @rowID=@contatcId;
+     End
+
+	 return @rowID;
+END
+GO
+USE [master]
+GO
+ALTER DATABASE [Evolent Health] SET  READ_WRITE 
+GO
